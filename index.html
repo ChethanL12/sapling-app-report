@@ -60,20 +60,21 @@
   /* ===== TICKER ===== */
   .ticker-wrap{
     background:var(--navy-deep);
-    background-image:linear-gradient(90deg,#061A2E,#0D2D48 40%,#0A2540);
-    overflow:hidden;white-space:nowrap;padding:8px 0;
-    border-bottom:2px solid rgba(93,191,92,0.4);
-    position:relative;
+    overflow:hidden;padding:7px 0;
+    border-bottom:1px solid rgba(28,79,128,0.25);
+    position:relative;display:flex;align-items:center;
   }
-  .ticker-wrap::before,.ticker-wrap::after{content:"";position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none;}
-  .ticker-wrap::before{left:0;background:linear-gradient(90deg,#061A2E,rgba(6,26,46,0));}
-  .ticker-wrap::after{right:0;background:linear-gradient(270deg,#0A2540,rgba(10,37,64,0));}
-  .ticker{display:inline-block;font-size:12px;font-weight:600;animation:scroll-left 50s linear infinite;}
-  .ticker .sym{color:rgba(200,225,245,0.9);letter-spacing:.04em;margin-right:4px;}
-  .ticker .pl{font-weight:800;margin-right:28px;letter-spacing:.01em;}
-  .ticker .pl.up{color:#7DD67C;}
-  .ticker .pl.down{color:#FF9089;}
-  .ticker .none{color:rgba(150,190,220,0.7);font-weight:600;}
+  .ticker-lbl{font-size:8.5px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:rgba(200,228,255,0.38);padding:0 18px 0 20px;white-space:nowrap;flex-shrink:0;border-right:1px solid rgba(255,255,255,0.07);}
+  .ticker-inner{flex:1;overflow:hidden;white-space:nowrap;position:relative;}
+  .ticker-inner::before,.ticker-inner::after{content:"";position:absolute;top:0;bottom:0;width:50px;z-index:2;pointer-events:none;}
+  .ticker-inner::before{left:0;background:linear-gradient(90deg,var(--navy-deep),transparent);}
+  .ticker-inner::after{right:0;background:linear-gradient(270deg,var(--navy-deep),transparent);}
+  .ticker{display:inline-block;font-size:11.5px;font-weight:600;animation:scroll-left 75s linear infinite;padding-left:20px;}
+  .ticker .sym{color:rgba(200,225,245,0.7);letter-spacing:.03em;margin-right:4px;}
+  .ticker .pl{font-weight:700;margin-right:24px;letter-spacing:.01em;}
+  .ticker .pl.up{color:rgba(125,214,124,0.85);}
+  .ticker .pl.down{color:rgba(255,144,137,0.85);}
+  .ticker .none{color:rgba(150,190,220,0.5);font-weight:600;}
   @keyframes scroll-left{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
 
   /* ===== HEADER — Clean White (logo has white bg) ===== */
@@ -92,13 +93,11 @@
   .hero-logo{height:84px;width:auto;flex-shrink:0;}
   .hero-text{flex:1;min-width:280px;}
   .eyebrow{
-    display:inline-flex;align-items:center;gap:7px;
-    font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--green-deep);
-    background:var(--green-soft);border:1px solid rgba(61,140,60,.2);
-    padding:5px 12px;border-radius:20px;margin-bottom:12px;
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:9.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:10px;
   }
-  .eyebrow .ic{width:13px;height:13px;}
+  .eyebrow .ic{width:12px;height:12px;opacity:.65;}
   h1{font-size:34px;font-weight:800;line-height:1.08;margin:0 0 12px;letter-spacing:-.028em;color:var(--navy-deep);}
   .period{
     display:inline-flex;align-items:center;gap:8px;
@@ -114,23 +113,14 @@
     background:#fff;
     box-shadow:var(--shadow);
   }
-  .hs{padding:14px 24px;text-align:center;border-right:1px solid var(--border-soft);min-width:120px;}
+  .hs{padding:16px 22px;text-align:center;border-right:1px solid var(--border-soft);min-width:128px;display:flex;flex-direction:column;align-items:center;gap:5px;}
   .hs:last-child{border-right:none;}
-  .hs-label{font-size:9px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  .hs-label{font-size:9px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);}
   .hs-value{font-size:22px;font-weight:800;letter-spacing:-.025em;color:var(--navy-deep);line-height:1;}
   .hs-value.up{color:var(--green-deep);}
   .hs-value.down{color:var(--loss-deep);}
-  .hs-sub{font-size:10px;color:var(--muted);margin-top:4px;font-weight:500;}
-  .live-dot{
-    width:7px;height:7px;border-radius:50%;background:var(--green);
-    display:inline-block;margin-right:5px;vertical-align:middle;
-    box-shadow:0 0 0 3px rgba(93,191,92,0.25);
-    animation:pulse-dot 2s ease-in-out infinite;
-  }
-  @keyframes pulse-dot{
-    0%,100%{box-shadow:0 0 0 3px rgba(93,191,92,0.25);}
-    50%{box-shadow:0 0 0 7px rgba(93,191,92,0.08);}
-  }
+  .hs-sub{font-size:10px;color:var(--muted);font-weight:500;}
+  .live-dot{display:none;}
 
   /* ===== DATE FILTER BAR ===== */
   .filterbar{
@@ -350,6 +340,7 @@
   footer{text-align:center;padding:8px 0 36px;font-size:11.5px;color:var(--muted);font-weight:500;}
   footer b{color:var(--navy);font-weight:800;}
   footer .sep{margin:0 9px;opacity:.4;}
+  .disclaimer{margin-top:12px;font-size:10px;color:#9AAABB;font-weight:400;max-width:700px;margin-left:auto;margin-right:auto;line-height:1.65;border-top:1px solid var(--border-soft);padding-top:12px;}
 
   /* ===== RESPONSIVE ===== */
   @media(max-width:1080px){
@@ -413,9 +404,10 @@
   <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></symbol>
   <symbol id="i-filter" viewBox="0 0 24 24"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></symbol>
   <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></symbol>
+  <symbol id="i-signal" viewBox="0 0 24 24"><rect x="3" y="13" width="3" height="8" rx="1"/><rect x="10.5" y="8" width="3" height="13" rx="1"/><rect x="18" y="3" width="3" height="18" rx="1"/><polyline points="2 10 6 6 10 9 14 5 18 2" stroke-width="1.5"/></symbol>
 </svg>
 
-<div class="ticker-wrap"><div class="ticker" id="ticker"></div></div>
+<div class="ticker-wrap"><span class="ticker-lbl">Signal Highlights</span><div class="ticker-inner"><div class="ticker" id="ticker"></div></div></div>
 
 <div class="topbar">
   <div class="wrap">
@@ -428,22 +420,26 @@
       </div>
       <div class="hero-stats">
         <div class="hs">
-          <div class="hs-label">Type</div>
-          <div class="hs-value" style="font-size:16px;">Swing</div>
+          <span class="chip sm" style="--c:var(--navy);--cs:#E8EFF7"><svg class="ic"><use href="#i-signal"/></svg></span>
+          <div class="hs-label">Signal Type</div>
+          <div class="hs-value" style="font-size:14px;">Equity Signals</div>
           <div class="hs-sub">Cash Segment</div>
         </div>
         <div class="hs">
+          <span class="chip sm" style="--c:var(--navy);--cs:#E8EFF7"><svg class="ic"><use href="#i-layers"/></svg></span>
           <div class="hs-label">Universe</div>
-          <div class="hs-value" style="font-size:16px;">Nifty 500</div>
-          <div class="hs-sub">EMA 9/13/26</div>
+          <div class="hs-value" style="font-size:15px;">Nifty 500</div>
+          <div class="hs-sub">EMA 9 / 13 / 26</div>
         </div>
         <div class="hs">
-          <div class="hs-label">Signals</div>
+          <span class="chip sm" style="--c:var(--navy);--cs:#E8EFF7"><svg class="ic"><use href="#i-activity"/></svg></span>
+          <div class="hs-label">Signals Analysed</div>
           <div class="hs-value" id="hsCount">—</div>
           <div class="hs-sub" id="hsSessions">—</div>
         </div>
         <div class="hs">
-          <div class="hs-label">Avg P/L</div>
+          <span class="chip sm" style="--c:var(--green-deep);--cs:var(--green-soft)"><svg class="ic"><use href="#i-trend-up"/></svg></span>
+          <div class="hs-label">Avg Signal Return</div>
           <div class="hs-value up" id="hsAvg">—</div>
           <div class="hs-sub" id="hsWin">—</div>
         </div>
@@ -454,7 +450,7 @@
 
 <div class="wrap">
   <div class="filterbar">
-    <div class="fb-label"><svg class="ic"><use href="#i-filter"/></svg> Period</div>
+    <div class="fb-label"><svg class="ic"><use href="#i-filter"/></svg> Performance Period</div>
     <div class="range">
       From <input type="date" id="dFrom">
       To <input type="date" id="dTo">
@@ -502,13 +498,13 @@
         </div>
 
         <div class="stat" style="--c:var(--green)">
-          <div class="stat-top"><span class="chip sm" style="--c:var(--green-deep);--cs:var(--green-soft)"><svg class="ic"><use href="#i-trend-up"/></svg></span><div class="stat-label">Average P/L</div></div>
+          <div class="stat-top"><span class="chip sm" style="--c:var(--green-deep);--cs:var(--green-soft)"><svg class="ic"><use href="#i-trend-up"/></svg></span><div class="stat-label">Avg Signal Return</div></div>
           <div class="stat-value gain" id="vAvg">—</div>
           <div class="stat-foot"><span class="stat-sub" id="sAvg">—</span><span class="rating good" id="rAvg">—</span></div>
         </div>
 
         <div class="stat" style="--c:var(--blue)">
-          <div class="stat-top"><span class="chip sm" style="--c:var(--blue);--cs:var(--blue-soft)"><svg class="ic"><use href="#i-percent"/></svg></span><div class="stat-label">Win Rate</div></div>
+          <div class="stat-top"><span class="chip sm" style="--c:var(--blue);--cs:var(--blue-soft)"><svg class="ic"><use href="#i-percent"/></svg></span><div class="stat-label">Positive Signal Rate</div></div>
           <div class="stat-value" id="vWin">—</div>
           <div class="stat-foot"><span class="stat-sub" id="sWin">—</span><span class="rating excellent" id="rWin">—</span></div>
         </div>
@@ -582,7 +578,7 @@
     <section class="panel" style="margin-bottom:0;">
       <div class="panel-head">
         <span class="chip" style="--c:var(--teal);--cs:var(--teal-soft)"><svg class="ic"><use href="#i-bars"/></svg></span>
-        <h2>P/L Distribution</h2>
+        <h2>Return Distribution</h2>
       </div>
       <div class="panel-body">
         <div id="distRows"></div>
@@ -643,7 +639,7 @@
           <th data-key="3" class="num">Stop Loss <span class="sort">▲▼</span></th>
           <th data-key="4" class="num">Target <span class="sort">▲▼</span></th>
           <th data-key="5">R:R</th>
-          <th data-key="6" class="num">P/L % <span class="sort">▲▼</span></th>
+          <th data-key="6" class="num">Signal Return <span class="sort">▲▼</span></th>
           <th data-key="7">Status <span class="sort">▲▼</span></th>
           <th data-key="8" class="num">Peak Price <span class="sort">▲▼</span></th>
           <th data-key="9" class="num">Peak Gain <span class="sort">▲▼</span></th>
@@ -660,6 +656,7 @@
 
 <footer>
   <b>Sapling Multi Ventures Pvt. Ltd.</b><span class="sep">·</span>Business for Purpose<span class="sep">·</span>EMA Cross Scanner<span class="sep">·</span>Generated 10 Aug 2026
+  <div class="disclaimer">This report evaluates historical stock signals generated by the EMA scanner system. It does not represent executed trades, invested capital, or realised investment returns. Past signal performance does not guarantee future results.</div>
 </footer>
 
 <script>
@@ -898,7 +895,7 @@ function renderAll(){
   /* ---- header avg ---- */
   $('hsAvg').textContent = (avg>=0?'+':'−')+Math.abs(avg).toFixed(2)+'%';
   $('hsAvg').className = 'hs-value ' + (avg>=0?'up':'down');
-  $('hsWin').textContent = winPct.toFixed(1)+'% win rate';
+  $('hsWin').textContent = winPct.toFixed(1)+'% Positive';
 
   /* ---- donut ---- */
   const C = 2*Math.PI*54, GAP = 2;
