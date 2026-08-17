@@ -331,6 +331,16 @@
   .rr{font-size:11px;font-weight:700;color:var(--muted);background:var(--bg-2);padding:3px 8px;border-radius:6px;}
   .empty{padding:44px;text-align:center;color:var(--muted);font-size:13px;font-weight:500;}
 
+  /* ===== PAGINATION ===== */
+  .pager-row{display:flex;align-items:center;justify-content:center;gap:10px;padding:14px 20px;border-top:1px solid var(--border-soft);background:#FAFCFF;border-radius:0 0 14px 14px;}
+  .pager-btn{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;color:var(--navy);background:#fff;border:1px solid var(--border);border-radius:8px;padding:6px 14px;cursor:pointer;transition:all .15s;letter-spacing:.01em;font-family:inherit;}
+  .pager-btn:hover:not(:disabled){background:var(--navy-deep);color:#fff;border-color:var(--navy-deep);}
+  .pager-btn:disabled{opacity:.3;cursor:default;pointer-events:none;}
+  .pager-pills{display:flex;align-items:center;gap:5px;}
+  .pager-pill{width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:var(--muted);background:transparent;border:1px solid transparent;border-radius:8px;cursor:pointer;transition:all .15s;font-family:inherit;}
+  .pager-pill:hover{background:#F4F7FB;color:var(--navy);border-color:var(--border);}
+  .pager-pill.active{background:var(--navy-deep);color:#fff;border-color:var(--navy-deep);}
+
   /* ===== NOTE / FOOTER ===== */
   .note{display:flex;gap:13px;align-items:flex-start;background:#FFFFFF;border:1px solid var(--border);
     border-left:4px solid var(--amber);border-radius:12px;padding:15px 18px;box-shadow:var(--shadow-sm);margin-bottom:22px;}
@@ -648,6 +658,7 @@
         <tbody id="tbody"></tbody>
       </table>
     </div>
+    <div class="pager-row" id="pager"></div>
   </section>
 
 
@@ -732,7 +743,8 @@ const maxDate = parseDate(allDates[allDates.length-1]);
    STATE
    ========================================================= */
 let rangeFrom = minDate, rangeTo = maxDate;   // active date window
-let filter = 'all', query = '', sortKey = null, sortDir = 1;
+let filter = 'all', query = '', sortKey = null, sortDir = 1, page = 1;
+const PER_PAGE = 15;
 
 /* Rows inside the active date window (drives EVERY metric on the page) */
 function inRange(){
@@ -777,7 +789,7 @@ dTo.addEventListener('change', onRangeChange);
 
 document.getElementById('resetBtn').addEventListener('click', ()=>{
   rangeFrom = minDate; rangeTo = maxDate;
-  filter='all'; query=''; sortKey=null; sortDir=1;
+  filter='all'; query=''; sortKey=null; sortDir=1; page=1;
   document.getElementById('searchBox').value='';
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelector('.tab[data-filter="all"]').classList.add('active');
@@ -977,12 +989,22 @@ function renderAll(){
 }
 
 function renderTable(){
-  const rows = tableRows();
+  const allRows = tableRows();
   const total = inRange().length;
-  $('rowCount').textContent = `${rows.length} of ${total} signals shown`;
+  const pageCount = Math.max(1, Math.ceil(allRows.length / PER_PAGE));
+  if (page > pageCount) page = pageCount;
+  if (page < 1) page = 1;
+  const rows = allRows.slice((page-1)*PER_PAGE, page*PER_PAGE);
+
+  const showing = allRows.length
+    ? `${(page-1)*PER_PAGE+1}–${Math.min(page*PER_PAGE, allRows.length)} of ${total}`
+    : `0 of ${total}`;
+  $('rowCount').textContent = showing + ' signals';
+
   const tb = $('tbody');
-  if (!rows.length){
+  if (!allRows.length){
     tb.innerHTML = '<tr><td colspan="11" class="empty">No signals match this filter.</td></tr>';
+    renderPager(0, 0);
     return;
   }
   tb.innerHTML = rows.map(r=>{
@@ -1003,6 +1025,28 @@ function renderTable(){
       <td class="num">${days}</td>
     </tr>`;
   }).join('');
+  renderPager(page, pageCount);
+}
+
+function renderPager(pg, pageCount){
+  const el = $('pager');
+  if (!el || pageCount <= 1){ if(el) el.innerHTML = ''; return; }
+  const pills = Array.from({length: pageCount}, (_, i) => {
+    const n = i + 1;
+    return `<button class="pager-pill${n===pg?' active':''}" onclick="goPage(${n})">${n}</button>`;
+  }).join('');
+  el.innerHTML = `
+    <button class="pager-btn" onclick="goPage(${pg-1})" ${pg<=1?'disabled':''}>&#8592; Prev</button>
+    <div class="pager-pills">${pills}</div>
+    <button class="pager-btn" onclick="goPage(${pg+1})" ${pg>=pageCount?'disabled':''}>Next &#8594;</button>
+  `;
+}
+
+function goPage(p){
+  page = p;
+  renderTable();
+  const section = $('tbody').closest('section');
+  if(section) section.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 function renderTicker(rows){
@@ -1024,10 +1068,11 @@ $('tabs').addEventListener('click', e=>{
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   b.classList.add('active');
   filter = b.dataset.filter;
+  page = 1;
   renderTable();
 });
 
-$('searchBox').addEventListener('input', e=>{ query = e.target.value.trim().toLowerCase(); renderTable(); });
+$('searchBox').addEventListener('input', e=>{ query = e.target.value.trim().toLowerCase(); page = 1; renderTable(); });
 
 document.querySelectorAll('thead th').forEach(th=>{
   th.addEventListener('click', ()=>{
