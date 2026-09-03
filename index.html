@@ -433,7 +433,7 @@
   .panel-kicker{font-size:10px;color:var(--muted);font-weight:600;}
   .panel-body{padding:20px;}
 
-  .stat-grid{grid-template-columns:repeat(3,1fr);gap:14px;}
+  .stat-grid{grid-template-columns:repeat(4,1fr);gap:14px;}
   .stat{padding:17px 17px 15px;border-color:var(--border-soft);box-shadow:none;animation:none;transition:border-color .15s;background:#FFF;}
   .stat::before{left:16px;right:16px;top:0;bottom:auto;width:auto;height:2px;border-radius:0 0 4px 4px;}
   .stat:hover{transform:none;box-shadow:none;border-color:#BBC8D1;}
@@ -473,7 +473,7 @@
 
   @media(max-width:1080px){
     .hero-stats{width:100%;}
-    .stat-grid{grid-template-columns:repeat(3,1fr);}
+    .stat-grid{grid-template-columns:repeat(2,1fr);}
   }
   @media(max-width:760px){
     .wrap{padding:0 16px;}
@@ -661,6 +661,24 @@
         </div>
 
         <div class="stat" style="--c:var(--green)">
+          <div class="stat-top"><span class="chip sm" style="--c:var(--green-deep);--cs:var(--green-soft)"><svg class="ic"><use href="#i-target"/></svg></span><div class="stat-label">Target Hits</div></div>
+          <div class="stat-value gain" id="vHit">—</div>
+          <div class="stat-foot"><span class="stat-sub" id="sHit">—</span><span class="rating good" id="rHit">—</span></div>
+        </div>
+
+        <div class="stat" style="--c:var(--loss)">
+          <div class="stat-top"><span class="chip sm" style="--c:var(--loss-deep);--cs:var(--loss-soft)"><svg class="ic"><use href="#i-octagon"/></svg></span><div class="stat-label">Stop-Loss Hits</div></div>
+          <div class="stat-value loss" id="vSl">—</div>
+          <div class="stat-foot"><span class="stat-sub" id="sSl">—</span><span class="rating watch" id="rSl">—</span></div>
+        </div>
+
+        <div class="stat" style="--c:var(--amber)">
+          <div class="stat-top"><span class="chip sm" style="--c:var(--amber-deep);--cs:var(--amber-soft)"><svg class="ic"><use href="#i-clock"/></svg></span><div class="stat-label">Open Signals</div></div>
+          <div class="stat-value amber" id="vOpen">—</div>
+          <div class="stat-foot"><span class="stat-sub" id="sOpen">—</span><span class="rating watch">Active</span></div>
+        </div>
+
+        <div class="stat" style="--c:var(--green)">
           <div class="stat-top"><span class="chip sm" style="--c:var(--green-deep);--cs:var(--green-soft)"><svg class="ic"><use href="#i-target"/></svg></span><div class="stat-label">Closed Hit Rate</div></div>
           <div class="stat-value gain" id="vClosedRate">—</div>
           <div class="stat-foot"><span class="stat-sub" id="sClosedRate">—</span><span class="rating good" id="rClosedRate">—</span></div>
@@ -676,12 +694,6 @@
           <div class="stat-top"><span class="chip sm" style="--c:var(--blue);--cs:var(--blue-soft)"><svg class="ic"><use href="#i-percent"/></svg></span><div class="stat-label">Positive Signals</div></div>
           <div class="stat-value" id="vWin">—</div>
           <div class="stat-foot"><span class="stat-sub" id="sWin">—</span><span class="rating excellent" id="rWin">—</span></div>
-        </div>
-
-        <div class="stat" style="--c:var(--amber)">
-          <div class="stat-top"><span class="chip sm" style="--c:var(--amber-deep);--cs:var(--amber-soft)"><svg class="ic"><use href="#i-clock"/></svg></span><div class="stat-label">Open Signals</div></div>
-          <div class="stat-value amber" id="vOpen">—</div>
-          <div class="stat-foot"><span class="stat-sub" id="sOpen">—</span><span class="rating watch">Active</span></div>
         </div>
 
         <div class="stat" style="--c:var(--blue)">
@@ -1013,9 +1025,9 @@ function renderAll(){
   $('hsSessions').textContent = sessions + (sessions===1?' session':' sessions');
 
   if (!n){
-    ['vTotal','vClosedRate','vOpen','vAvg','vWin','vDays','qPeak','qPayoff','qBest']
+    ['vTotal','vHit','vSl','vClosedRate','vOpen','vAvg','vWin','vDays','qPeak','qPayoff','qBest']
       .forEach(id=>$(id).textContent='—');
-    ['sTotal','sClosedRate','sOpen','sAvg','sWin','sDays']
+    ['sTotal','sHit','sSl','sClosedRate','sOpen','sAvg','sWin','sDays']
       .forEach(id=>$(id).textContent='—');
     $('hsClosedRate').textContent='—'; $('hsClosedSub').textContent='No closed signals';
     $('hsAvg').textContent='—'; $('hsAvg').className='hs-value'; $('hsWin').textContent='—';
@@ -1050,6 +1062,17 @@ function renderAll(){
   /* ---- stat cards ---- */
   $('vTotal').textContent = n;
   $('sTotal').textContent = `across ${sessions} session${sessions===1?'':'s'}`;
+
+  $('vHit').textContent = hit.length;
+  $('sHit').textContent = closed ? `${closedHitRate.toFixed(1)}% of closed outcomes` : 'no closed outcomes';
+  setRating($('rHit'), closedHitRate>=60?'excellent':closedHitRate>=50?'good':'watch',
+                       closedHitRate>=60?'Strong':closedHitRate>=50?'Balanced':'Review');
+
+  const closedSlRate = closed ? sl.length/closed*100 : 0;
+  $('vSl').textContent = sl.length;
+  $('sSl').textContent = closed ? `${closedSlRate.toFixed(1)}% of closed outcomes` : 'no closed outcomes';
+  setRating($('rSl'), closedSlRate<=25?'good':closedSlRate<=40?'watch':'weak',
+                      closedSlRate<=25?'Contained':closedSlRate<=40?'Watch':'Elevated');
 
   $('vClosedRate').textContent = closed ? closedHitRate.toFixed(1)+'%' : '—';
   $('sClosedRate').textContent = closed ? `${hit.length} targets · ${sl.length} stops` : 'no closed signals';
