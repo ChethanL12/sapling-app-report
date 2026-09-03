@@ -402,7 +402,6 @@
   .ticker-item{display:inline-flex;align-items:center;gap:7px;color:#DCE8EF;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);padding:5px 9px;border-radius:7px;white-space:nowrap;}
   .ticker-item.hit{border-color:rgba(110,206,124,.22);}
   .ticker-item.sl{border-color:rgba(240,128,120,.22);}
-  .ticker-outcome{font-size:8px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#9EB5C4;}
   .ticker-item .sym{color:#FFF;margin:0;font-weight:700;}
   .ticker-item .pl{margin:0;font-size:10.5px;}
   .ticker-source{font-size:9.5px;color:#9EB5C4;white-space:nowrap;}
@@ -595,7 +594,7 @@
   <div class="wrap ticker-shell">
     <span class="ticker-lbl">Closed trades</span>
     <div class="ticker-inner"><div class="ticker" id="ticker"></div></div>
-    <span class="ticker-source" id="tickerSource">Closed outcomes</span>
+    <span class="ticker-source" id="tickerSource">Google Sheets · NSE trading days</span>
   </div>
 </div>
 
@@ -1290,14 +1289,10 @@ function goPage(p){
 function renderTicker(rows){
   const t = $('ticker');
   const closedRows = rows.filter(r=>r[7]!=='open').slice().sort((a,b)=>parseDate(b[0])-parseDate(a[0]));
-  const targetCount = closedRows.filter(r=>r[7]==='hit').length;
-  const stopCount = closedRows.filter(r=>r[7]==='sl').length;
-  $('tickerSource').textContent = `${closedRows.length} closed · ${targetCount} target · ${stopCount} stop-loss`;
   if (!closedRows.length){ t.innerHTML = '<span class="none">No closed trades in the selected period</span>'; return; }
   const items = closedRows.map(r=>{
     const up = r[6]>=0;
-    const outcome = r[7]==='hit' ? 'Target' : 'Stop Loss';
-    return `<span class="ticker-item ${r[7]}"><span class="ticker-outcome">${outcome}</span><span class="sym">${r[1]}</span><span class="pl ${up?'up':'down'}">${up?'▲':'▼'} ${up?'+':''}${r[6].toFixed(2)}%</span></span>`;
+    return `<span class="ticker-item ${r[7]}"><span class="sym">${r[1]}</span><span class="pl ${up?'up':'down'}">${up?'▲':'▼'} ${up?'+':''}${r[6].toFixed(2)}%</span></span>`;
   }).join('');
   t.style.setProperty('--ticker-duration', Math.max(45, closedRows.length*2.5)+'s');
   t.innerHTML = `<span class="ticker-set">${items}</span><span class="ticker-set" aria-hidden="true">${items}</span>`;
